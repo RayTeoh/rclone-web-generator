@@ -3,259 +3,230 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Drive Transfer Job Generator (macOS + rclone)</title>
+  <title>Drive Transfer Job Generator</title>
   <style>
-    :root {
-      --bg: #0b0f14; --panel:#121922; --muted:#8190a5; --fg:#e6eef8; --pri:#5cc8ff; --acc:#c3f53c; --red:#ff6b6b;
-      --ok:#5af78e; --warn:#ffd866;
+    :root{
+      --bg:#ffffff; --fg:#111111; --muted:#6b7280; --line:#e5e7eb; --pri:#2563eb; --pri-weak:#eff6ff; --ok:#16a34a; --warn:#ca8a04; --err:#dc2626;
     }
-    * { box-sizing: border-box; }
-    html, body { margin:0; padding:0; height:100%; background:var(--bg); color:var(--fg); font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji"; }
-    header { padding:28px 20px 6px; background:linear-gradient(180deg, rgba(92,200,255,.12), transparent 60%); border-bottom:1px solid #1b2736; }
-    h1 { margin:0 0 6px; font-size: clamp(20px, 4vw, 30px); letter-spacing:.2px; }
-    .sub { color:var(--muted); font-size:14px; }
-    main { display:grid; grid-template-columns: 1.1fr .9fr; gap:18px; padding:18px; }
-    @media (max-width: 1024px){ main { grid-template-columns: 1fr; } }
-    section, .card { background: var(--panel); border:1px solid #1b2736; border-radius:14px; box-shadow: 0 6px 20px rgba(0,0,0,.24); }
-    .card { padding:16px; }
-    h2 { font-size:18px; margin:0 0 10px; }
-    label { display:block; font-size:13px; color:var(--muted); margin:10px 0 6px; }
-    input[type="text"], input[type="number"], textarea, select { width:100%; padding:12px 12px; border-radius:10px; background:#0d141d; color:var(--fg); border:1px solid #233143; outline:none; font-size:14px; }
-    input:focus, textarea:focus, select:focus { border-color: var(--pri); box-shadow: 0 0 0 3px rgba(92,200,255,.15); }
-    .row { display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
-    .btn { appearance:none; border:none; background:linear-gradient(180deg, #2c7ab8, #185b8b); color:white; padding:12px 14px; border-radius:12px; cursor:pointer; font-weight:600; box-shadow: inset 0 1px 0 rgba(255,255,255,.2), 0 6px 20px rgba(24,91,139,.35); }
-    .btn.alt { background:linear-gradient(180deg, #3a4a2d, #27361f); }
-    .btn.ghost { background: transparent; border:1px solid #2a394d; color:var(--fg); }
-    .btn + .btn { margin-left:8px; }
-    .muted { color:var(--muted); font-size:13px; }
-    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size:13px; }
-    .codebox { background:#0a0f15; border:1px solid #1b2736; border-radius:12px; padding:12px; overflow:auto; max-height:390px; white-space:pre; }
-    details { border:1px solid #233143; border-radius:12px; padding:12px; background:#0f1722; }
-    details summary { cursor: pointer; color: var(--pri); font-weight:700; margin:-12px -12px 12px; padding:12px; list-style:none; }
-    details[open] summary { border-bottom:1px dashed #233143; }
-    .pill { display:inline-flex; align-items:center; padding:4px 10px; border-radius:999px; border:1px solid #28425b; color:#b5d9ff; font-size:12px; background:#0f1b26; }
-    .grid-3 { display:grid; grid-template-columns: repeat(3, 1fr); gap:12px; }
-    @media (max-width: 880px){ .grid-3 { grid-template-columns: 1fr; } }
-    .kbd { padding:.2em .4em; border:1px solid #394a5d; border-bottom-width:2px; border-radius:6px; background:#0c121a; color:#cfe3ff; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size:12px; }
-    .hr { height:1px; background:#1b2736; margin:14px 0; }
-    .ok { color: var(--ok); }
-    .warn { color: var(--warn); }
-    .err { color: var(--red); }
-    .small { font-size:12px; color:var(--muted); }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--fg);font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial}
+    header{padding:28px 20px 8px;border-bottom:1px solid var(--line)}
+    h1{margin:0 0 6px;font-size:clamp(20px,4vw,30px);font-weight:700}
+    .sub{color:var(--muted);font-size:14px}
+    main{display:grid;grid-template-columns:1.05fr .95fr;gap:18px;padding:18px}
+    @media (max-width:1000px){main{grid-template-columns:1fr}}
+    .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px}
+    h2{font-size:18px;margin:0 0 10px}
+    label{display:block;font-size:13px;color:var(--muted);margin:10px 0 6px}
+    input,select,textarea{width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--line);background:#fff;color:var(--fg);font-size:14px;outline:none}
+    input:focus,select:focus,textarea:focus{border-color:var(--pri);box-shadow:0 0 0 3px var(--pri-weak)}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .row3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    @media (max-width:880px){.row,.row3{grid-template-columns:1fr}}
+    .btn{appearance:none;border:1px solid var(--line);background:#fff;color:var(--fg);padding:11px 14px;border-radius:12px;cursor:pointer;font-weight:600}
+    .btn.primary{background:var(--pri);color:#fff;border-color:var(--pri)}
+    .btn + .btn{margin-left:8px}
+    .small{font-size:12px;color:var(--muted)}
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size:13px}
+    .codebox{background:#fafafa;border:1px solid var(--line);border-radius:12px;padding:12px;overflow:auto;max-height:460px;white-space:pre}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap}
+    .pill{display:inline-flex;align-items:center;padding:4px 10px;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--fg);font-size:12px}
+    .hr{height:1px;background:var(--line);margin:14px 0}
+    .muted{color:var(--muted)}
+    .codewrap{position:relative}
   </style>
 </head>
 <body>
-<header>
-  <h1>Drive Transfer Job Generator (macOS + rclone)</h1>
-  <div class="sub">Generates a portable bash script and LaunchAgent to copy a <em>“Shared with me”</em> Google Drive folder into <em>your Drive</em> with auto‑resume & cleanup. Host this page on GitHub Pages.</div>
-</header>
-
-<main>
-  <!-- Left column: UI -->
-  <section class="card">
-    <h2>1) Configure Job</h2>
-    <div class="row">
-      <div>
-        <label>Remote name (new or existing)</label>
-        <input id="remoteName" type="text" placeholder="e.g. mydrive" value="mydrive" />
+  <header>
+    <h1>Drive Transfer Job Generator</h1>
+    <div class="sub">Generate scripts to copy a <em>“Shared with me”</em> Google Drive folder into <em>your Drive</em> via rclone, with auto‑resume & cleanup. Minimal white UI. macOS or Windows.</div>
+  </header>
+  <main>
+    <section class="card">
+      <h2>1) Configure</h2>
+      <div class="row">
+        <div>
+          <label>Operating system</label>
+          <select id="os">
+            <option value="mac">macOS</option>
+            <option value="win">Windows</option>
+          </select>
+        </div>
+        <div>
+          <label>Run type</label>
+          <select id="runType">
+            <option value="first">First time (establish)</option>
+            <option value="next">Next time (follow‑up)</option>
+          </select>
+        </div>
       </div>
-      <div>
-        <label>Job slug (letters, numbers, dashes)</label>
-        <input id="jobSlug" type="text" placeholder="auto (ex: job-2025-09-06)" />
+
+      <div class="row">
+        <div>
+          <label>Remote name (destination)</label>
+          <input id="remoteName" type="text" placeholder="e.g. mydrive" value="mydrive" />
+        </div>
+        <div>
+          <label>Shared folder link (full Google Drive URL or Folder ID)</label>
+          <input id="sharedUrl" type="text" placeholder="https://drive.google.com/drive/folders/xxxxxxxxxxxxxxxxx" />
+        </div>
       </div>
-    </div>
 
-    <label>Shared folder link (full Google Drive URL)</label>
-    <input id="sharedUrl" type="text" placeholder="https://drive.google.com/drive/folders/xxxxxxxxxxxxxxxxx?usp=sharing" />
-
-    <label>Destination path inside <span class="mono">My Drive</span></label>
-    <input id="destPath" type="text" placeholder="e.g. Backups/ProjectX (auto-created)" />
-
-    <div class="row">
-      <div>
-        <label>LaunchAgent poll interval (seconds)</label>
-        <input id="pollInterval" type="number" min="30" value="60" />
+      <div class="row">
+        <div>
+          <label>Destination mode</label>
+          <select id="destMode">
+            <option value="path">Path in My Drive</option>
+            <option value="id">Folder ID in My Drive</option>
+          </select>
+        </div>
+        <div id="destPathWrap">
+          <label>Destination path (created if missing)</label>
+          <input id="destPath" type="text" placeholder="Backups/ProjectX" />
+        </div>
+        <div id="destIdWrap" style="display:none">
+          <label>Destination Folder ID</label>
+          <input id="destId" type="text" placeholder="e.g. 0AAbCDe..." />
+        </div>
       </div>
-      <div>
-        <label>Plist domain prefix</label>
-        <input id="plistDomain" type="text" value="com.local.rclonecopy" />
+
+      <div class="row">
+        <div id="pollMacWrap">
+          <label>LaunchAgent poll (seconds, ≥30)</label>
+          <input id="pollSec" type="number" min="30" value="60" />
+        </div>
+        <div id="pollWinWrap" style="display:none">
+          <label>Task Scheduler poll (minutes, ≥1)</label>
+          <input id="pollMin" type="number" min="1" value="1" />
+        </div>
+        <div id="plistWrap">
+          <label>Plist domain prefix (macOS)</label>
+          <input id="plistDomain" type="text" value="com.local.rclonecopy" />
+        </div>
       </div>
-    </div>
 
-    <div style="margin-top:12px">
-      <button class="btn" id="btnGenerate">Generate Scripts</button>
-      <button class="btn ghost" id="btnReset">Reset</button>
-    </div>
-    <div class="hr"></div>
-    <div class="muted small">Tip: You’ll sign into Google during the first run via rclone’s <span class="pill">auto config</span>.</div>
-  </section>
-
-  <!-- Right column: Downloads/preview -->
-  <section class="card">
-    <h2>2) Download Files</h2>
-    <div id="downloads" class="grid-3">
-      <!-- buttons injected here -->
-    </div>
-    <div class="hr"></div>
-    <div class="small muted">Each file is generated with your inputs. Use <span class="kbd">chmod +x</span> on <span class="mono">*.sh</span> files before running.</div>
-  </section>
-
-  <section class="card" style="grid-column:1/-1">
-    <h2>3) Preview (read‑only)</h2>
-    <div id="previewTabs" class="row" style="gap:8px; margin-bottom:10px"></div>
-    <pre class="codebox mono" id="preview"></pre>
-  </section>
-
-  <section class="card" style="grid-column:1/-1">
-    <h2>Setup Guide (Do This Now)</h2>
-    <ol class="small" style="line-height:1.65">
-      <li><strong>Install rclone</strong> (macOS):<br />
-        <span class="mono">/bin/bash -lc "command -v brew >/dev/null || /bin/bash -c \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\""</span><br />
-        <span class="mono">brew install rclone</span>
-      </li>
-      <li><strong>Generate & download</strong> the files above. You’ll get: <span class="mono">install.sh, job.sh, kill_switch.sh, status.sh, logout.sh, rerun.sh, <em>and</em> a sample plist</span>.</li>
-      <li><strong>Install the job</strong> (creates folders, writes the plist with the right path, loads agent, and starts now):<br />
-        <span class="mono">chmod +x ~/Downloads/install.sh && ~/Downloads/install.sh</span>
-      </li>
-      <li>During first run, <strong>rclone will open a browser</strong> for Google login (<em>auto config</em>). Approve access for your account, then return to Terminal.</li>
-      <li><strong>Watch progress</strong>:
-        <div class="mono">~/rclone-jobs/&lt;JOB&gt;/status.sh</div>
-        Shows LaunchAgent status plus last 200 lines of the log (<span class="mono">~/Library/Logs/rclone-jobs/&lt;JOB&gt;/run.log</span>).
-      </li>
-      <li>When you hit the <strong>750GB/day</strong> Drive upload cap, the job <em>auto-pauses</em> and writes a resume time exactly 24h later. The LaunchAgent checks every <em>poll interval</em> and resumes as soon as the time passes. If you reboot, it will resume after login at the correct time.</li>
-      <li>When everything is copied (one‑way, no updates), the script will <strong>log out</strong> (delete its private rclone config), <strong>stop</strong> the agent, and <strong>clean itself up</strong>. You’ll also get a macOS notification on completion.</li>
-    </ol>
-
-    <details>
-      <summary>Optional utilities (Kill switch / Manual logout / Cleanup)</summary>
-      <div class="small">
-        <p><strong>Kill switch</strong>: <span class="mono">~/rclone-jobs/&lt;JOB&gt;/kill_switch.sh</span> — immediately stops the agent, removes the job’s rclone token/config, and exits.</p>
-        <p><strong>Manual logout</strong>: <span class="mono">~/rclone-jobs/&lt;JOB&gt;/logout.sh</span> — disconnects the job’s Google token and deletes the job’s private config.</p>
-        <p><strong>Re‑run / new variables</strong>: <span class="mono">~/rclone-jobs/&lt;JOB&gt;/rerun.sh</span> — quick way to change only the folder URL or destination for the same job.</p>
+      <div style="margin-top:12px">
+        <button class="btn primary" id="btnGenerate" onclick="window.buildAll()">Generate</button>
+        <button class="btn" id="btnReset" onclick="window.resetForm()">Reset</button>
       </div>
-    </details>
-  </section>
+      <div class="hr"></div>
+      <div class="small muted">This page generates code. Copy or download files below. On first run, rclone opens a browser for Google login (auto‑config).</div>
+    </section>
 
-  <section class="card" style="grid-column:1/-1">
-    <h2>Publish on GitHub Pages (for yourself or others)</h2>
-    <ol class="small" style="line-height:1.65">
-      <li>Create a new public repository on GitHub, e.g. <strong>drive-job-generator</strong>.</li>
-      <li>Put this <span class="mono">index.html</span> at the repository root. (You can copy this entire file.)</li>
-      <li>Commit & push: <div class="mono">git init && git add index.html && git commit -m "Add job generator" && git branch -M main && git remote add origin &lt;your-repo-url&gt; && git push -u origin main</div></li>
-      <li>Enable Pages: <em>Settings → Pages → Build and deployment</em> → Source: <strong>Deploy from a branch</strong>, Branch: <strong>main</strong>, Folder: <strong>/ (root)</strong>. Save.</li>
-      <li>Your site will be live at <span class="mono">https://&lt;your-username&gt;.github.io/drive-job-generator/</span>. Share the link.</li>
-    </ol>
-  </section>
+    <section class="card">
+      <h2>2) Downloads</h2>
+      <div id="downloads" class="row3"></div>
+      <div class="hr"></div>
+      <div class="small muted">Main scripts only. Optional utilities are provided as copy‑paste code blocks below, per OS.</div>
+    </section>
 
-  <section class="card" style="grid-column:1/-1">
-    <h2>Next Job (Reusability)</h2>
-    <ul class="small" style="line-height:1.65">
-      <li>Just change the inputs above and click <strong>Generate</strong> to produce a fresh <em>installable</em> job with a new slug.</li>
-      <li>Each job uses its <strong>own</strong> private rclone config file (e.g. <span class="mono">~/.config/rclone/&lt;JOB&gt;.conf</span>) so you can safely remove it without touching other remotes.</li>
-      <li>If you want to <em>re-run</em> the same job later with a different folder/destination, edit or run <span class="mono">rerun.sh</span>.</li>
-    </ul>
-  </section>
-</main>
+    <section class="card" style="grid-column:1/-1">
+      <h2>3) Preview</h2>
+      <div id="previewTabs" class="tabs" style="margin-bottom:10px"></div>
+      <pre class="codebox mono" id="preview"></pre>
+    </section>
+
+    <section class="card" style="grid-column:1/-1">
+      <h2>Optional Features — Code (Copy‑Paste)</h2>
+      <p class="small muted">All utilities are displayed <strong>on this page</strong> (not packaged). Includes kill switch, activity progress log, manual logout, and housekeeping tools.</p>
+      <div class="row" id="utils"></div>
+    </section>
+
+    <section class="card" style="grid-column:1/-1">
+      <h2>Setup Guide</h2>
+      <div id="guide" class="small"></div>
+    </section>
+
+    <section class="card" style="grid-column:1/-1">
+      <h2>Publish on GitHub Pages</h2>
+      <ol class="small">
+        <li>Create a public repo, e.g. <strong>drive-job-generator</strong>.</li>
+        <li>Save this as <span class="mono">index.html</span> at repo root.</li>
+        <li>Commit & push:
+          <div class="mono">git init && git add index.html && git commit -m "Add job generator" && git branch -M main && git remote add origin &lt;your-repo-url&gt; && git push -u origin main</div>
+        </li>
+        <li>Enable Pages: <em>Settings → Pages</em> → Source: <strong>Deploy from a branch</strong>, Branch: <strong>main</strong>, Folder: <strong>/ (root)</strong>.</li>
+        <li>Your site: <span class="mono">https://&lt;username&gt;.github.io/drive-job-generator/</span></li>
+      </ol>
+    </section>
+
+    <section class="card" style="grid-column:1/-1">
+      <h2>Next Job</h2>
+      <ul class="small">
+        <li>Switch <strong>Run type</strong> to <em>Next time</em> and regenerate to skip first‑time install steps.</li>
+        <li>Each job uses a unique ID (auto). Utilities let you clean up or re-run safely without affecting other jobs.</li>
+      </ul>
+    </section>
+  </main>
 
 <script>
 (function(){
+  const $ = sel => document.querySelector(sel);
   const els = {
-    remoteName:  document.getElementById('remoteName'),
-    jobSlug:     document.getElementById('jobSlug'),
-    sharedUrl:   document.getElementById('sharedUrl'),
-    destPath:    document.getElementById('destPath'),
-    poll:        document.getElementById('pollInterval'),
-    plistDomain: document.getElementById('plistDomain'),
-    btnGen:      document.getElementById('btnGenerate'),
-    btnReset:    document.getElementById('btnReset'),
-    downloads:   document.getElementById('downloads'),
-    preview:     document.getElementById('preview'),
-    tabs:        document.getElementById('previewTabs'),
+    os: $('#os'),
+    runType: $('#runType'),
+    remote: $('#remoteName'),
+    shared: $('#sharedUrl'),
+    destMode: $('#destMode'),
+    destPath: $('#destPath'),
+    destId: $('#destId'),
+    destPathWrap: $('#destPathWrap'),
+    destIdWrap: $('#destIdWrap'),
+    pollSec: $('#pollSec'),
+    pollMin: $('#pollMin'),
+    pollMacWrap: $('#pollMacWrap'),
+    pollWinWrap: $('#pollWinWrap'),
+    plistDomain: $('#plistDomain'),
+    plistWrap: $('#plistWrap'),
+    downloads: $('#downloads'),
+    tabs: $('#previewTabs'),
+    preview: $('#preview'),
+    utils: $('#utils'),
+    guide: $('#guide')
   };
 
-  function todaySlug(){
-    const d = new Date();
-    const pad=n=> String(n).padStart(2,'0');
-    return `job-${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-  }
+  function pad(n){return String(n).padStart(2,'0')}
+  function timeSlug(){const d=new Date();return `job-${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}`}
+  function shortId(id){return (id||'').replace(/[^A-Za-z0-9_-]/g,'').slice(0,6) || 'x';}
+  function autoJob(folderId){return `${timeSlug()}-${shortId(folderId)}`}
+  function extractFolderId(url){if(!url)return '';try{const u=new URL(url.trim());const p=u.searchParams.get('id');if(p) return p;let m=u.pathname.match(/\/folders\/([A-Za-z0-9_-]+)/);if(m) return m[1];m=u.pathname.match(/\/d\/([A-Za-z0-9_-]+)/);if(m) return m[1];}catch(e){/* ignore */}if(/^[A-Za-z0-9_-]{20,}$/.test(url)) return url;return ''}
+  function dl(name, content){const a=document.createElement('a');a.className='btn';a.download=name;a.textContent=`Download ${name}`;a.href=URL.createObjectURL(new Blob([content],{type:'text/plain'}));return a}
+  function tab(name, content){const b=document.createElement('button');b.className='btn';b.textContent=name;b.onclick=()=>{els.preview.textContent=content};return b}
+  function codeBlock(title, code){const wrap=document.createElement('div');wrap.className='card';wrap.style.padding='12px';const h=document.createElement('div');h.textContent=title;h.style.fontWeight='600';h.style.marginBottom='6px';const pre=document.createElement('pre');pre.className='codebox mono';pre.textContent=code;const btn=document.createElement('button');btn.className='btn';btn.textContent='Copy';btn.style.marginTop='8px';btn.onclick=()=>{navigator.clipboard.writeText(code)};wrap.appendChild(h);wrap.appendChild(pre);wrap.appendChild(btn);return wrap}
 
-  function extractFolderId(url){
-    // Accepts full Drive URL: /drive/folders/<id>, or open?id=<id>, or file/d/<id> (if given a shared file's parent id manually)
-    if(!url) return '';
-    try{
-      const u = new URL(url.trim());
-      const idParam = u.searchParams.get('id');
-      if(idParam) return idParam;
-      // /folders/<id>
-      const m1 = u.pathname.match(/\/folders\/([A-Za-z0-9_-]+)/);
-      if(m1) return m1[1];
-      // Sometimes link is to a file inside the folder; user can paste the folder ID directly too
-      const m2 = u.pathname.match(/\/d\/([A-Za-z0-9_-]+)/);
-      if(m2) return m2[1];
-      // Fallback: if user pasted a bare ID
-      if(url.match(/^[A-Za-z0-9_-]{20,}$/)) return url;
-    }catch(e){
-      // Maybe they pasted a bare ID
-      if(url.match(/^[A-Za-z0-9_-]{20,}$/)) return url;
-    }
-    return '';
-  }
+  function showOs(){const mac=els.os.value==='mac';els.pollMacWrap.style.display=mac?'block':'none';els.plistWrap.style.display=mac?'block':'none';els.pollWinWrap.style.display=!mac?'block':'none'}
+  function showDestMode(){const byPath=els.destMode.value==='path';els.destPathWrap.style.display=byPath?'block':'none';els.destIdWrap.style.display=byPath?'none':'block'}
 
-  function sanitizeJob(s){
-    return (s||'').toLowerCase().replace(/[^a-z0-9-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,60) || todaySlug();
-  }
-
-  function escBash(s){
-    return String(s).replace(/`/g,'\`').replace(/\$/g,'\\$');
-  }
-
-  function file(name, content){
-    const a = document.createElement('a');
-    a.className = 'btn alt';
-    a.download = name;
-    a.textContent = `Download ${name}`;
-    a.href = URL.createObjectURL(new Blob([content], {type:"text/plain"}));
-    return a;
-  }
-
-  function tab(name, content){
-    const b = document.createElement('button');
-    b.className = 'btn ghost';
-    b.textContent = name;
-    b.onclick = ()=> { els.preview.textContent = content; };
-    return b;
-  }
-
-  function build(){
-    const remote = (els.remoteName.value || 'mydrive').trim();
-    const job = sanitizeJob(els.jobSlug.value || todaySlug());
-    const folderId = extractFolderId(els.sharedUrl.value || '');
-    const dest = (els.destPath.value || '').replace(/^\/+/, '').trim();
-    const poll = Math.max(30, parseInt(els.poll.value||'60',10));
-    const domain = (els.plistDomain.value||'com.local.rclonecopy').trim();
-
-    if(!folderId){ alert('Please provide a valid Google Drive shared folder URL (or a folder ID).'); return; }
-    if(!dest){ alert('Please provide a destination path inside your Drive (e.g. Backups/ProjectX).'); return; }
-
-    const paths = {
-      jobDir: `"$HOME/rclone-jobs/${job}"`,
-      conf:   `"$HOME/.config/rclone/${job}.conf"`,
-      logDir: `"$HOME/Library/Logs/rclone-jobs/${job}"`,
-      log:    `"$HOME/Library/Logs/rclone-jobs/${job}/run.log"`,
-      state:  `"$HOME/.local/share/rclone-jobs/${job}"`,
-      plist:  `"$HOME/Library/LaunchAgents/${domain}.${job}.plist"`,
-      label:  `${domain}.${job}`,
+  // === Builders ===
+  function buildMac(cfg){
+    const {remote, job, folderId, destMode, destPath, destId, pollSec, domain, runType} = cfg;
+    const paths={
+      jobDir:`"$HOME/rclone-jobs/${job}"`,
+      conf:`"$HOME/.config/rclone/${job}.conf"`,
+      logDir:`"$HOME/Library/Logs/rclone-jobs/${job}"`,
+      log:`"$HOME/Library/Logs/rclone-jobs/${job}/run.log"`,
+      state:`"$HOME/.local/share/rclone-jobs/${job}"`,
+      plist:`"$HOME/Library/LaunchAgents/${domain}.${job}.plist"`,
+      label:`${domain}.${job}`
     };
 
-    const commonHeader = `#!/usr/bin/env bash\nset -euo pipefail\nIFS=$'\n\t'\n`;
+    const SRC="src"; // job-local source remote anchored to shared folder
+    const DST=remote; // destination remote name
+
+    const commonHeader = `#!/usr/bin/env bash
+set -euo pipefail
+IFS=$'
+	'
+`;
 
     const jobSh = `${commonHeader}
-# === rclone Drive copy job ===
 REMOTE=${JSON.stringify(remote)}
-FOLDER_ID=${JSON.stringify(folderId)}
-DEST_PATH=${JSON.stringify(dest)}
-POLL_INTERVAL=${JSON.stringify(poll)}
 JOB=${JSON.stringify(job)}
+FOLDER_ID=${JSON.stringify(folderId)}
+DEST_MODE=${JSON.stringify(destMode)}
+DEST_PATH=${JSON.stringify(destPath)}
+DEST_ID=${JSON.stringify(destId)}
+POLL_INTERVAL=${JSON.stringify(pollSec)}
 JOB_DIR=${paths.jobDir}
 CONF=${paths.conf}
 LOG_DIR=${paths.logDir}
@@ -263,280 +234,449 @@ LOG=${paths.log}
 STATE_DIR=${paths.state}
 PLIST=${paths.plist}
 LABEL=${JSON.stringify(paths.label)}
+SRC=${JSON.stringify(SRC)}
+DST=${JSON.stringify(DST)}
 
 mkdir -p "$HOME/rclone-jobs/${job}" "$HOME/.config/rclone" "$HOME/.local/share/rclone-jobs/${job}" "$HOME/Library/Logs/rclone-jobs/${job}"
 
-note(){
-  /usr/bin/osascript -e "display notification \"$1\" with title \"rclone job: ${job}\" subtitle \"${remote} → ${dest}\"" >/dev/null 2>&1 || true
-}
-
-log(){
-  printf "[%s] %s\n" "$(date '+%Y-%m-%d %H:%M:%S')" "$*" | tee -a ${paths.log}
-}
-
+note(){ /usr/bin/osascript -e "display notification \"$1\" with title \"rclone job: ${job}\"" >/dev/null 2>&1 || true; }
+log(){ printf "[%s] %s
+" "$(date '+%Y-%m-%d %H:%M:%S')" "$*" | tee -a ${paths.log}; }
 action(){ log "→ $*"; }
-
 resume_file="$STATE_DIR/resume_at.epoch"
 
-ensure_remote(){
+ensure_remotes(){
   if [ ! -f ${paths.conf} ]; then
-    action "Creating private rclone config for this job: ${job}"
-    # This will launch the interactive OAuth flow in your browser (auto config)
-    # Press Enter to accept defaults when asked.
-    rclone --config ${paths.conf} config create "$REMOTE" drive scope=drive || {
-      log "If the above failed, run: rclone --config ${paths.conf} config"; exit 1;
-    }
+    action "Creating job-local rclone config"
+    # Destination: your Drive (generic)
+    rclone --config ${paths.conf} config create "$DST" drive scope=drive || { log "Open auth failed. Run: rclone --config ${paths.conf} config"; exit 1; }
+    # Source: shared folder root anchored by folder ID
+    rclone --config ${paths.conf} config create "$SRC" drive scope=drive root_folder_id="$FOLDER_ID" || { log "Failed to create SRC remote"; exit 1; }
+  fi
+  # Ensure destination path exists if using PATH mode
+  if [ "$DEST_MODE" = "path" ]; then
+    rclone --config ${paths.conf} mkdir "$DST:$DEST_PATH" || true
   fi
 }
 
-should_wait(){
-  if [ -f "$resume_file" ]; then
-    local now=$(date +%s)
-    local when=$(cat "$resume_file" || echo 0)
-    if [ "$now" -lt "$when" ]; then
-      local delta=$((when-now))
-      log "Daily upload cap previously hit. Will resume at $(date -r "$when") (in ${delta}s). Exiting for launchd to retry."
-      return 0
-    fi
-  fi
-  return 1
-}
-
-mark_resume_in_24h(){
-  local t=$(( $(date +%s) + 24*60*60 ))
-  echo "$t" > "$resume_file"
-  log "Upload cap reached. Next attempt scheduled at $(date -r "$t")."
-  note "Upload cap reached. Will resume in 24h."
-}
-
+should_wait(){ if [ -f "$resume_file" ]; then now=$(date +%s); when=$(cat "$resume_file"||echo 0); if [ "$now" -lt "$when" ]; then log "Cap hit; resume at $(date -r "$when")"; return 0; fi; fi; return 1; }
+mark_resume(){ t=$(( $(date +%s) + 24*60*60 )); echo "$t" > "$resume_file"; log "Scheduled resume at $(date -r "$t")"; note "Will resume in 24h"; }
 clear_resume(){ rm -f "$resume_file" 2>/dev/null || true; }
 
 copy_once(){
-  action "Starting copy: shared-folder ${folderId} → ${dest}"
-  # One-way copy: only missing files; skip updates to existing files
-  # Flags:
-  #  --drive-shared-with-me : allow reading from "Shared with me" sources
-  #  --ignore-existing      : do not update/overwrite existing files
-  #  --drive-stop-on-upload-limit : stop cleanly if 750GB/day cap is reached
-  #  --transfers/checkers/tpslimit : tame API usage a bit; adjust as you like
-  rclone --config ${paths.conf} copy "$REMOTE:${folderId}" "$REMOTE:${dest}" \
-    --drive-shared-with-me \
-    --ignore-existing \
-    --drive-stop-on-upload-limit \
-    --transfers=8 --checkers=16 --tpslimit=4 --tpslimit-burst=4 \
-    --log-file=${paths.log} --log-format="date,time,microseconds" -v -P || return $?
+  action "Copying src → dst"
+  local args=( --config ${paths.conf} copy "$SRC:" )
+  if [ "$DEST_MODE" = "id" ]; then
+    args+=( "$DST:" --drive-root-folder-id "$DEST_ID" )
+  else
+    args+=( "$DST:$DEST_PATH" )
+  fi
+  args+=( --ignore-existing --drive-stop-on-upload-limit --log-file=${paths.log} --log-format="date,time,microseconds" -v -P )
+  rclone "${args[@]}" || return $?
 }
 
 copy_needed(){
-  # Dry-run a copy; if nothing would transfer, we are done
-  rclone --config ${paths.conf} copy "$REMOTE:${folderId}" "$REMOTE:${dest}" \
-    --drive-shared-with-me --ignore-existing --dry-run -v 2>&1 | grep -qi "Transferred:.*0 / 0" && return 1 || return 0
+  local args=( --config ${paths.conf} copy "$SRC:" )
+  if [ "$DEST_MODE" = "id" ]; then args+=( "$DST:" --drive-root-folder-id "$DEST_ID" ); else args+=( "$DST:$DEST_PATH" ); fi
+  args+=( --ignore-existing --dry-run -v )
+  rclone "${args[@]}" 2>&1 | grep -qi "Transferred:.*0 / 0" && return 1 || return 0
 }
 
 cleanup_all(){
-  action "Cleaning up (unloading agent, removing private config & temp files)"
-  # Unload launch agent
+  action "Cleaning up"
   launchctl unload -w ${paths.plist} 2>/dev/null || true
   rm -f ${paths.plist} 2>/dev/null || true
-  # Remove private rclone config for this job (logs you out for this job)
   rm -f ${paths.conf} 2>/dev/null || true
-  # Keep logs for your records, but you can delete the folder if you wish
   note "Job complete. Logs at ~/Library/Logs/rclone-jobs/${job}"
 }
 
 main(){
   log "=== rclone job ${job} started ==="
-  ensure_remote
+  ensure_remotes
   if should_wait; then exit 0; fi
-
   if copy_once; then
-    log "Copy run finished without fatal error. Checking if more work remains..."
-    if copy_needed; then
-      log "More files remain. Will continue in the next cycle (launchd poll)."
-    else
-      log "Nothing left to transfer. Finishing up."
-      clear_resume
-      cleanup_all
-      log "=== COMPLETE ==="; note "Transfer complete"; exit 0
-    fi
+    log "Copy run finished; checking if more remains…"
+    if copy_needed; then log "More files remain; will run again on next cycle."; else log "All done."; clear_resume; cleanup_all; log "=== COMPLETE ==="; note "Transfer complete"; fi
   else
-    # Non-zero exit. Detect upload cap vs real error.
-    if grep -Eiq "(upload limit|rate limit|cannot upload more than 750|exceeded.*upload)" ${paths.log}; then
-      mark_resume_in_24h; exit 0
-    else
-      log "Unexpected error. See log: ${paths.log}"; note "Job error — check log"; exit 1
-    fi
+    if grep -Eiq "(upload limit|cannot upload more than 750|exceeded.*upload)" ${paths.log}; then mark_resume; else log "Unexpected error — see log"; note "Job error"; exit 1; fi
   fi
 }
 
 main "$@"
 `;
 
-    const installSh = `${commonHeader}
-# === Installer for rclone job: ${job} ===
+    const installSh = `#!/usr/bin/env bash
+set -euo pipefail
 REMOTE=${JSON.stringify(remote)}
 JOB=${JSON.stringify(job)}
 DOMAIN=${JSON.stringify(domain)}
-POLL_INTERVAL=${JSON.stringify(poll)}
-HOME_DIR="$HOME"
-JOB_DIR="$HOME/rclone-jobs/${job}"
-CONF="$HOME/.config/rclone/${job}.conf"
-LOG_DIR="$HOME/Library/Logs/rclone-jobs/${job}"
+POLL_INTERVAL=${JSON.stringify(pollSec)}
 PLIST="$HOME/Library/LaunchAgents/${domain}.${job}.plist"
-LABEL="${domain}.${job}"
-
+JOB_DIR="$HOME/rclone-jobs/${job}"
+LOG_DIR="$HOME/Library/Logs/rclone-jobs/${job}"
 mkdir -p "$JOB_DIR" "$LOG_DIR" "$HOME/.config/rclone" "$HOME/.local/share/rclone-jobs/${job}" "$HOME/Library/LaunchAgents"
 
-cat > "$JOB_DIR/job.sh" <<'EOF_JOB'
+${runType==='first' ? `# Install rclone via Homebrew if missing
+if ! command -v rclone >/dev/null 2>&1; then
+  /bin/bash -lc "command -v brew >/dev/null || /bin/bash -c \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\""
+  brew install rclone
+fi
+` : `# Assuming rclone already installed (Next time)`}
+
+cat > "$JOB_DIR/job.sh" <<'EOF'
 ${jobSh}
-EOF_JOB
+EOF
 chmod +x "$JOB_DIR/job.sh"
 
-# Write helper scripts
-cat > "$JOB_DIR/status.sh" <<'EOF_STATUS'
-#!/usr/bin/env bash
+# Create LaunchAgent plist
+cat > "$PLIST" <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+  <key>Label</key><string>${domain}.${job}</string>
+  <key>ProgramArguments</key><array><string>${'$'}{HOME}/rclone-jobs/${job}/job.sh</string></array>
+  <key>RunAtLoad</key><true/>
+  <key>StartInterval</key><integer>${pollSec}</integer>
+  <key>StandardOutPath</key><string>${'$'}{HOME}/Library/Logs/rclone-jobs/${job}/stdout.log</string>
+  <key>StandardErrorPath</key><string>${'$'}{HOME}/Library/Logs/rclone-jobs/${job}/stderr.log</string>
+  <key>LimitLoadToSessionType</key><string>Aqua</string>
+</dict></plist>
+EOF
+
+launchctl unload -w "$PLIST" 2>/dev/null || true
+launchctl load -w "$PLIST"
+launchctl kickstart -k gui/$(id -u)/"${domain}.${job}" 2>/dev/null || true
+
+echo "Installed. Status: $JOB_DIR/status.sh (see logs in $LOG_DIR)"
+`;
+
+    // Optional utilities (mac) — displayed inline
+    const statusSh = `#!/usr/bin/env bash
 set -euo pipefail
 LABEL=${JSON.stringify(paths.label)}
 LOG=${paths.log}
 UID=$(id -u)
-(launchctl print gui/$UID/$LABEL 2>/dev/null || echo "(launchctl: not loaded)") | sed 's/^/  /'
-echo "\n--- Last 200 log lines ---"
-[ -f ${paths.log} ] && tail -n 200 ${paths.log} || echo "(no log yet)"
-EOF_STATUS
-chmod +x "$JOB_DIR/status.sh"
-
-cat > "$JOB_DIR/kill_switch.sh" <<'EOF_KILL'
-#!/usr/bin/env bash
-set -euo pipefail
-LABEL=${JSON.stringify(paths.label)}
-PLIST=${paths.plist}
-CONF=${paths.conf}
-launchctl unload -w "$PLIST" 2>/dev/null || true
-rm -f "$PLIST"
-rm -f "$CONF"
-echo "Kill switch: agent unloaded and private config removed."
-EOF_KILL
-chmod +x "$JOB_DIR/kill_switch.sh"
-
-cat > "$JOB_DIR/logout.sh" <<'EOF_LOGOUT'
-#!/usr/bin/env bash
-set -euo pipefail
-CONF=${paths.conf}
-rm -f "$CONF" && echo "Removed job's private rclone config." || echo "Nothing to remove."
-EOF_LOGOUT
-chmod +x "$JOB_DIR/logout.sh"
-
-cat > "$JOB_DIR/rerun.sh" <<'EOF_RERUN'
-#!/usr/bin/env bash
-set -euo pipefail
-# Quick editor for common variables; then restart the agent.
-JOB_DIR=${paths.jobDir}
-PLIST=${paths.plist}
-LABEL=${JSON.stringify(paths.label)}
-${paths.jobDir}/job.sh >/dev/null 2>&1 || true
-${paths.jobDir}/status.sh || true
-echo "Open ${paths.jobDir}/job.sh in your editor and tweak FOLDER_ID / DEST_PATH, then:"
-echo "  launchctl unload -w $PLIST && launchctl load -w $PLIST"
-EOF_RERUN
-chmod +x "$JOB_DIR/rerun.sh"
-
-# Create LaunchAgent plist (absolute path to Program)
-cat > "$PLIST" <<EOF
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-  <key>Label</key><string>${domain}.${job}</string>
-  <key>ProgramArguments</key>
-  <array>
-    <string>${'$'}{HOME}/rclone-jobs/${job}/job.sh</string>
-  </array>
-  <key>RunAtLoad</key><true/>
-  <key>StartInterval</key><integer>${poll}</integer>
-  <key>StandardOutPath</key><string>${'$'}{HOME}/Library/Logs/rclone-jobs/${job}/stdout.log</string>
-  <key>StandardErrorPath</key><string>${'$'}{HOME}/Library/Logs/rclone-jobs/${job}/stderr.log</string>
-  <key>LimitLoadToSessionType</key><string>Aqua</string>
-</dict>
-</plist>
-EOF
-
-# Load (or reload) agent and kick off immediately
-launchctl unload -w "$PLIST" 2>/dev/null || true
-launchctl load -w "$PLIST"
-
-# Start a run now (launchd will also run it on its own)
-launchctl kickstart -k gui/$(id -u)/"$LABEL" 2>/dev/null || true
-
-echo "Installed. Use: $JOB_DIR/status.sh  (and check $LOG_DIR)"
+launchctl print gui/$UID/$LABEL 2>/dev/null || echo "(launchctl: not loaded)"
+echo "
+--- Live log (Ctrl+C to quit) ---"
+[ -f ${paths.log} ] && tail -f ${paths.log} || echo "(no log yet)"
 `;
-
-    const samplePlist = `<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-  <key>Label</key><string>${domain}.${job}</string>
-  <key>ProgramArguments</key>
-  <array>
-    <string>${'$'}{HOME}/rclone-jobs/${job}/job.sh</string>
-  </array>
-  <key>RunAtLoad</key><true/>
-  <key>StartInterval</key><integer>${poll}</integer>
-  <key>StandardOutPath</key><string>${'$'}{HOME}/Library/Logs/rclone-jobs/${job}/stdout.log</string>
-  <key>StandardErrorPath</key><string>${'$'}{HOME}/Library/Logs/rclone-jobs/${job}/stderr.log</string>
-  <key>LimitLoadToSessionType</key><string>Aqua</string>
-</dict>
-</plist>`;
-
-    const killSwitch = `${commonHeader}
-LABEL=${JSON.stringify(paths.label)}
+    const killSh = `#!/usr/bin/env bash
+set -euo pipefail
 PLIST=${paths.plist}
 CONF=${paths.conf}
 launchctl unload -w "$PLIST" 2>/dev/null || true
 rm -f "$PLIST" "$CONF"
-echo "Kill switch complete."
+echo "Kill switch complete (agent unloaded, config removed)."
+`;
+    const logoutSh = `#!/usr/bin/env bash
+set -euo pipefail
+CONF=${paths.conf}
+rm -f "$CONF" && echo "Removed job's private rclone config." || echo "Nothing to remove."
+`;
+    const forceResumeSh = `#!/usr/bin/env bash
+set -euo pipefail
+STATE_DIR=${paths.state}
+rm -f "$STATE_DIR/resume_at.epoch" 2>/dev/null || true
+echo "Cleared 24h resume hold; agent will run next cycle."
+`;
+    const cleanupKeepLogs = `#!/usr/bin/env bash
+set -euo pipefail
+PLIST=${paths.plist}
+CONF=${paths.conf}
+launchctl unload -w "$PLIST" 2>/dev/null || true
+rm -f "$PLIST" "$CONF"
+echo "Cleaned agent & config. Logs kept at ${paths.logDir}."
+`;
+    const cleanupAll = `#!/usr/bin/env bash
+set -euo pipefail
+PLIST=${paths.plist}
+CONF=${paths.conf}
+JOB_DIR=${paths.jobDir}
+LOG_DIR=${paths.logDir}
+STATE_DIR=${paths.state}
+launchctl unload -w "$PLIST" 2>/dev/null || true
+rm -rf "$PLIST" "$CONF" "$JOB_DIR" "$LOG_DIR" "$STATE_DIR"
+echo "Removed agent, config, job dir, logs, and state."
+`;
+    const summarySh = `#!/usr/bin/env bash
+set -euo pipefail
+CONF=${paths.conf}
+SRC=src
+DST=${JSON.stringify(remote)}
+DEST_MODE=${JSON.stringify('${destMode}')}
+DEST_PATH=${JSON.stringify('${destPath}')}
+DEST_ID=${JSON.stringify('${destId}')}
+if [ "$DEST_MODE" = "id" ]; then DEST_ARG="$DST:"; EXTRA="--drive-root-folder-id $DEST_ID"; else DEST_ARG="$DST:$DEST_PATH"; EXTRA=""; fi
+rclone --config $CONF size "$SRC:" -v || true
+rclone --config $CONF size $DEST_ARG $EXTRA -v || true
 `;
 
-    const statusSh = `#!/usr/bin/env bash\nset -euo pipefail\nLABEL=${JSON.stringify(paths.label)}\nLOG=${paths.log}\nUID=$(id -u)\n(launchctl print gui/$UID/$LABEL 2>/dev/null || echo "(launchctl: not loaded)") | sed 's/^/  /'\necho "\\n--- Last 200 log lines ---"\n[ -f ${paths.log} ] && tail -n 200 ${paths.log} || echo "(no log yet)"\n`;
+    // Guide HTML
+    const guide = `
+<ol>
+<li><strong>Download</strong> <span class="mono">install.sh</span> and <span class="mono">job.sh</span>.</li>
+<li>Terminal:
+  <div class="mono">chmod +x ~/Downloads/install.sh && ~/Downloads/install.sh</div>
+</li>
+<li>Sign in to Google when rclone opens your browser (auto‑config).</li>
+<li>Status:
+  <div class="mono">launchctl print gui/$(id -u)/${paths.label}</div>
+  Logs: <span class="mono">~/Library/Logs/rclone-jobs/${job}/run.log</span>
+</li>
+<li>If 750GB/day cap hits, it pauses and resumes exactly 24h later (or use <em>Force resume</em> utility to clear the hold).</li>
+<li>On completion, it unloads, deletes the job config (logout), and notifies you.</li>
+</ol>`;
 
-    const logoutSh = `#!/usr/bin/env bash\nset -euo pipefail\nCONF=${paths.conf}\nrm -f "$CONF" && echo "Removed job's private rclone config." || echo "Nothing to remove."\n`;
-
-    const rerunSh = `#!/usr/bin/env bash\nset -euo pipefail\nJOB_DIR=${paths.jobDir}\nPLIST=${paths.plist}\nLABEL=${JSON.stringify(paths.label)}\necho "Open ${paths.jobDir}/job.sh and edit FOLDER_ID / DEST_PATH, then run:"\necho "  launchctl unload -w $PLIST && launchctl load -w $PLIST"\n`;
-
-    // Build downloads & preview tabs
-    els.downloads.innerHTML = '';
-    els.tabs.innerHTML = '';
-
-    const files = [
-      {name:'install.sh', content: installSh},
-      {name:'job.sh', content: jobSh},
-      {name:'com.plist', content: samplePlist},
-      {name:'kill_switch.sh', content: killSwitch},
-      {name:'status.sh', content: statusSh},
-      {name:'logout.sh', content: logoutSh},
-      {name:'rerun.sh', content: rerunSh},
-    ];
-
-    files.forEach(f=>{
-      els.downloads.appendChild(file(f.name, f.content));
-      els.tabs.appendChild(tab(f.name, f.content));
-    });
-
-    // Show first file in preview
-    els.preview.textContent = files[0].content;
+    return {
+      downloads:[
+        {name:'install.sh', content:installSh},
+        {name:'job.sh', content:jobSh}
+      ],
+      tabs:[
+        {name:'install.sh', content:installSh},
+        {name:'job.sh', content:jobSh}
+      ],
+      utils:[
+        {title:'Activity progress log (macOS — live follow)', code:statusSh},
+        {title:'Kill switch (macOS)', code:killSh},
+        {title:'Manual logout (macOS)', code:logoutSh},
+        {title:'Force resume now (macOS)', code:forceResumeSh},
+        {title:'Housekeeping: cleanup (keep logs, macOS)', code:cleanupKeepLogs},
+        {title:'Housekeeping: cleanup ALL (macOS)', code:cleanupAll},
+        {title:'Housekeeping: summary sizes (macOS)', code:summarySh}
+      ],
+      guideHtml:guide
+    };
   }
 
-  els.btnGen.addEventListener('click', build);
-  els.btnReset.addEventListener('click', ()=>{
-    els.remoteName.value='mydrive';
-    els.jobSlug.value='';
-    els.sharedUrl.value='';
-    els.destPath.value='';
-    els.poll.value='60';
-    els.plistDomain.value='com.local.rclonecopy';
+  function buildWin(cfg){
+    const {remote, job, folderId, destMode, destPath, destId, pollMin, runType} = cfg;
+    const paths={
+      jobDir:`$env:USERPROFILE/rclone-jobs/${job}`,
+      conf:`$env:USERPROFILE/.config/rclone/${job}.conf`,
+      logDir:`$env:LOCALAPPDATA/rclone-jobs/${job}`,
+      log:`$env:LOCALAPPDATA/rclone-jobs/${job}/run.log`,
+      state:`$env:LOCALAPPDATA/rclone-jobs/${job}/state`,
+      task:`Rclone.${job}`
+    };
+
+    const SRC='src';
+    const DST=remote;
+
+    const jobPs = `#requires -Version 5.1
+$ErrorActionPreference = 'Stop'
+$REMOTE = ${JSON.stringify(remote)}
+$JOB = ${JSON.stringify(job)}
+$FOLDER_ID = ${JSON.stringify(folderId)}
+$DEST_MODE = ${JSON.stringify(destMode)}
+$DEST_PATH = ${JSON.stringify(destPath)}
+$DEST_ID = ${JSON.stringify(destId)}
+$JOB_DIR = ${JSON.stringify(paths.jobDir)}
+$CONF = ${JSON.stringify(paths.conf)}
+$LOG_DIR = ${JSON.stringify(paths.logDir)}
+$LOG = ${JSON.stringify(paths.log)}
+$STATE_DIR = ${JSON.stringify(paths.state)}
+$SRC = ${JSON.stringify(SRC)}
+$DST = ${JSON.stringify(DST)}
+
+New-Item -ItemType Directory -Force -Path $JOB_DIR,$LOG_DIR,(Split-Path $CONF),$STATE_DIR | Out-Null
+
+function Write-Log($msg){"[$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')] $msg" | Tee-Object -FilePath $LOG -Append}
+function Should-Wait(){ $resume = Join-Path $STATE_DIR 'resume_at.epoch'; if(Test-Path $resume){$when=[int](Get-Content $resume); $now=[int]([DateTimeOffset]::Now.ToUnixTimeSeconds()); if($now -lt $when){Write-Log "Cap hit; resume at $([DateTimeOffset]::FromUnixTimeSeconds($when))"; return $true}}; return $false }
+function Mark-Resume(){ $t=[int]([DateTimeOffset]::Now.ToUnixTimeSeconds()+24*60*60); Set-Content -Path (Join-Path $STATE_DIR 'resume_at.epoch') -Value $t; Write-Log "Scheduled resume at $([DateTimeOffset]::FromUnixTimeSeconds($t))" }
+
+function Ensure-Remotes(){ if(!(Test-Path $CONF)){
+  Write-Log "Creating job-local rclone config"
+  rclone --config $CONF config create "$DST" drive scope=drive | Out-Null
+  rclone --config $CONF config create "$SRC" drive scope=drive root_folder_id="$FOLDER_ID" | Out-Null
+}
+  if($DEST_MODE -eq 'path'){ rclone --config $CONF mkdir "$DST:$DEST_PATH" | Out-Null }
+}
+
+function Copy-Once(){
+  $destArg = if($DEST_MODE -eq 'id'){"$DST:"} else {"$DST:$DEST_PATH"}
+  $extra = if($DEST_MODE -eq 'id'){ @('--drive-root-folder-id', $DEST_ID) } else { @() }
+  $args = @('--config', $CONF, 'copy', "$SRC:", $destArg) + $extra + @('--ignore-existing','--drive-stop-on-upload-limit','--log-file',$LOG,'-v','-P')
+  Write-Log "Starting copy"
+  & rclone @args; return $LASTEXITCODE
+}
+
+function Copy-Needed(){
+  $destArg = if($DEST_MODE -eq 'id'){"$DST:"} else {"$DST:$DEST_PATH"}
+  $extra = if($DEST_MODE -eq 'id'){ @('--drive-root-folder-id', $DEST_ID) } else { @() }
+  $args = @('--config', $CONF, 'copy', "$SRC:", $destArg) + $extra + @('--ignore-existing','--dry-run','-v')
+  $out = & rclone @args 2>&1
+  return -not ($out -match 'Transferred:.*0 / 0')
+}
+
+# main
+Write-Log "=== rclone job $JOB started ==="
+Ensure-Remotes
+if(Should-Wait){ exit 0 }
+$rc = Copy-Once
+if($rc -eq 0){
+  Write-Log "Copy run finished; checking if more remains…"
+  if(Copy-Needed){ Write-Log "More files remain; will run again." } else { Write-Log "All done."; Remove-Item -Force -ErrorAction SilentlyContinue $CONF; Write-Log "=== COMPLETE ===" }
+}else{
+  $logText = Get-Content $LOG -Raw
+  if($logText -match '(upload limit|cannot upload more than 750|exceeded.*upload)'){ Mark-Resume } else { Write-Log "Unexpected error — check log"; exit 1 }
+}
+`;
+
+    const installPs = `# Install/Setup for ${job}
+$ErrorActionPreference = 'Stop'
+$jobDir = ${JSON.stringify(paths.jobDir)}
+$logDir = ${JSON.stringify(paths.logDir)}
+$confDir = [IO.Path]::GetDirectoryName(${JSON.stringify(paths.conf)})
+New-Item -ItemType Directory -Force -Path $jobDir, $logDir, $confDir | Out-Null
+
+${runType==='first' ? `# Install rclone if missing via winget (fallback choco/scoop)
+if(-not (Get-Command rclone -ErrorAction SilentlyContinue)){
+  try { winget install --id=Rclone.Rclone -e --accept-package-agreements --accept-source-agreements }
+  catch { try { choco install rclone -y } catch { try { scoop install rclone } catch { Write-Host 'Please install rclone manually from https://rclone.org/downloads/'; } } }
+}
+` : `# Assuming rclone already installed (Next time)`}
+
+# Write job.ps1
+@'
+${jobPs}
+'@ | Set-Content -Path "$jobDir/job.ps1" -Encoding UTF8
+
+# Register scheduled task: run at logon and every ${pollMin} minute(s)
+$action = New-ScheduledTaskAction -Execute 'powershell.exe' -Argument "-NoProfile -ExecutionPolicy Bypass -File `"$jobDir/job.ps1`""
+$tr1 = New-ScheduledTaskTrigger -AtLogOn
+$tr2 = New-ScheduledTaskTrigger -Once (Get-Date).AddMinutes(1) -RepetitionInterval (New-TimeSpan -Minutes ${pollMin}) -RepetitionDuration ([TimeSpan]::MaxValue)
+try { Unregister-ScheduledTask -TaskName ${JSON.stringify(paths.task)} -Confirm:$false -ErrorAction SilentlyContinue } catch {}
+Register-ScheduledTask -TaskName ${JSON.stringify(paths.task)} -Action $action -Trigger $tr1,$tr2 -Description 'rclone Drive copy job' | Out-Null
+Start-ScheduledTask -TaskName ${JSON.stringify(paths.task)}
+Write-Host "Installed task ${paths.task}. Logs at ${paths.logDir}."
+`;
+
+    // Utilities (Windows) — displayed inline
+    const statusPs = `# Activity progress log (Windows — live follow)
+if(Test-Path ${JSON.stringify(paths.log)}){ Get-Content ${JSON.stringify(paths.log)} -Tail 50 -Wait } else { Write-Host '(no log yet)' }
+`;
+    const killPs = `# Kill switch (Windows)
+try{ Unregister-ScheduledTask -TaskName ${JSON.stringify(paths.task)} -Confirm:$false } catch{}
+if(Test-Path ${JSON.stringify(paths.conf)}){ Remove-Item -Force ${JSON.stringify(paths.conf)} }
+Write-Host 'Kill switch complete.'
+`;
+    const logoutPs = `# Manual logout (Windows)
+if(Test-Path ${JSON.stringify(paths.conf)}){ Remove-Item -Force ${JSON.stringify(paths.conf)}; Write-Host 'Removed job config.' } else { Write-Host 'Nothing to remove.' }
+`;
+    const forceResumePs = `# Force resume now (Windows)
+$state = ${JSON.stringify(paths.state)}
+$r = Join-Path $state 'resume_at.epoch'
+if(Test-Path $r){ Remove-Item -Force $r; Write-Host 'Cleared 24h resume hold.' } else { Write-Host 'No hold set.' }
+`;
+    const cleanupKeepLogsPs = `# Housekeeping: cleanup (keep logs, Windows)
+try{ Unregister-ScheduledTask -TaskName ${JSON.stringify(paths.task)} -Confirm:$false } catch{}
+if(Test-Path ${JSON.stringify(paths.conf)}){ Remove-Item -Force ${JSON.stringify(paths.conf)} }
+Write-Host 'Cleaned task & config. Logs kept at ${paths.logDir}.'
+`;
+    const cleanupAllPs = `# Housekeeping: cleanup ALL (Windows)
+try{ Unregister-ScheduledTask -TaskName ${JSON.stringify(paths.task)} -Confirm:$false } catch{}
+$paths = @(${JSON.stringify(paths.conf)}, ${JSON.stringify(paths.jobDir)}, ${JSON.stringify(paths.logDir)}, ${JSON.stringify(paths.state)})
+foreach($p in $paths){ if(Test-Path $p){ Remove-Item -Recurse -Force $p } }
+Write-Host 'Removed task, config, job dir, logs, and state.'
+`;
+    const summaryPs = `# Housekeeping: summary sizes (Windows)
+$rclone = 'rclone'
+$CONF = ${JSON.stringify(paths.conf)}
+$SRC = 'src:'
+$DST = ${JSON.stringify(remote)}
+$destArg = if(${JSON.stringify(destMode)} -eq 'id'){"$DST:"} else {"$DST:${destPath}"}
+$extra = if(${JSON.stringify(destMode)} -eq 'id'){ @('--drive-root-folder-id', ${JSON.stringify(destId)}) } else { @() }
+& $rclone --config $CONF size $SRC -v
+& $rclone --config $CONF size $destArg @extra -v
+`;
+
+    const guide = `
+<ol>
+<li><strong>Download</strong> <span class="mono">install.ps1</span> and <span class="mono">job.ps1</span>.</li>
+<li>Right‑click Start → Windows PowerShell (Admin), then: <div class="mono">Set-ExecutionPolicy Bypass -Scope Process -Force; & "$env:USERPROFILE\Downloads\install.ps1"</div></li>
+<li>Sign in to Google when rclone opens your browser (auto‑config).</li>
+<li>Logs: <span class="mono">%LOCALAPPDATA%/rclone-jobs/${job}/run.log</span> (use <em>Activity progress log</em> utility to follow live).</li>
+<li>Auto‑resume after 24h if 750GB/day cap is hit. Resumes at logon as well.</li>
+</ol>`;
+
+    return {
+      downloads:[
+        {name:'install.ps1', content:installPs},
+        {name:'job.ps1', content:jobPs}
+      ],
+      tabs:[
+        {name:'install.ps1', content:installPs},
+        {name:'job.ps1', content:jobPs}
+      ],
+      utils:[
+        {title:'Activity progress log (Windows — live follow)', code:statusPs},
+        {title:'Kill switch (Windows)', code:killPs},
+        {title:'Manual logout (Windows)', code:logoutPs},
+        {title:'Force resume now (Windows)', code:forceResumePs},
+        {title:'Housekeeping: cleanup (keep logs, Windows)', code:cleanupKeepLogsPs},
+        {title:'Housekeeping: cleanup ALL (Windows)', code:cleanupAllPs},
+        {title:'Housekeeping: summary sizes (Windows)', code:summaryPs}
+      ],
+      guideHtml:guide
+    };
+  }
+
+  function getCfg(){
+    const os = els.os.value;
+    const runType = els.runType.value;
+    const remote = (els.remote.value||'mydrive').trim();
+    const folderId = extractFolderId(els.shared.value||'');
+    const job = autoJob(folderId);
+    const destMode = els.destMode.value; // 'path' | 'id'
+    const destPath = (els.destPath.value||'').replace(/^\/+/, '').trim();
+    const destId = (els.destId.value||'').trim();
+    const pollSec = Math.max(30, parseInt(els.pollSec.value||'60',10));
+    const pollMin = Math.max(1, parseInt(els.pollMin.value||'1',10));
+    const domain = (els.plistDomain.value||'com.local.rclonecopy').trim();
+    if(!folderId){ alert('Please provide a valid Google Drive shared folder URL or Folder ID.'); return null }
+    if(destMode==='path' && !destPath){ alert('Please provide a destination path in your Drive.'); return null }
+    if(destMode==='id' && !destId){ alert('Please provide a destination Folder ID.'); return null }
+    return {os, runType, remote, job, folderId, destMode, destPath, destId, pollSec, pollMin, domain}
+  }
+
+  function render(res){
     els.downloads.innerHTML='';
     els.tabs.innerHTML='';
     els.preview.textContent='';
-  });
+    els.utils.innerHTML='';
+
+    res.downloads.forEach(f=> els.downloads.appendChild(dl(f.name, f.content)) );
+    res.tabs.forEach(t=> els.tabs.appendChild(tab(t.name, t.content)) );
+    if(res.tabs[0]) els.preview.textContent = res.tabs[0].content;
+
+    // Utilities
+    res.utils.forEach(u=> els.utils.appendChild(codeBlock(u.title, u.code)) );
+
+    els.guide.innerHTML = res.guideHtml;
+  }
+
+  window.buildAll = function(){
+    const cfg = getCfg(); if(!cfg) return;
+    const res = cfg.os==='mac' ? buildMac(cfg) : buildWin(cfg);
+    render(res);
+  }
+
+  window.resetForm = function(){
+    els.os.value='mac'; els.runType.value='first'; els.remote.value='mydrive'; els.shared.value='';
+    els.destMode.value='path'; els.destPath.value=''; els.destId.value=''; els.pollSec.value='60'; els.pollMin.value='1'; els.plistDomain.value='com.local.rclonecopy';
+    showOs(); showDestMode();
+    els.downloads.innerHTML=''; els.tabs.innerHTML=''; els.preview.textContent=''; els.utils.innerHTML=''; els.guide.innerHTML='';
+  }
+
+  els.os.addEventListener('change', showOs);
+  els.destMode.addEventListener('change', showDestMode);
+  // Redundant binding so button works whether inline or via JS
+  document.getElementById('btnGenerate')?.addEventListener('click', window.buildAll);
+  document.getElementById('btnReset')?.addEventListener('click', window.resetForm);
+
+  showOs(); showDestMode();
 })();
 </script>
 </body>
